@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Upload Map — Arena SHOOTER</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0e1117; color: #eee;
+         display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+  .box { background: #1a1f2b; border: 1px solid #ffb22e44; border-radius: 14px;
+         padding: 30px; max-width: 520px; width: 100%; text-align: center;
+         box-shadow: 0 20px 60px #000a; }
+  h1 { color: #ffb22e; margin: 0 0 8px; }
+  p { color: #aaa; font-size: 14px; margin: 6px 0; }
+  .drop { border: 2px dashed #ffb22e66; border-radius: 12px; padding: 40px 20px;
+          margin: 22px 0; cursor: pointer; transition: all .2s; background: #11151e; }
+  .drop:hover, .drop.over { background: #ffb22e15; border-color: #ffb22e; }
+  .drop strong { color: #ffb22e; font-size: 18px; }
+  input[type=file] { display: none; }
+  button { background: linear-gradient(180deg,#ffb22e,#e07a00); color:#111; border:none;
+           padding:14px 30px; border-radius:8px; font-weight:800; font-size:16px; cursor:pointer;
+           letter-spacing:1px; width:100%; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  #status { margin-top: 16px; font-size: 14px; min-height: 22px; }
+  .ok { color: #6ee06e; }
+  .err { color: #ff6b6b; }
+  .info { text-align: left; background: #11151e; border-radius: 8px; padding: 12px; margin-top: 18px; font-size: 13px; color: #999; }
+  code { background:#000; padding:2px 6px; border-radius:4px; color:#ffd27a; }
+  a { color: #ffb22e; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>🗺️ Upload Your Map</h1>
+    <p>Choose your <code>.glb</code> file. It will be saved as the game map automatically.</p>
+
+    <label for="file" class="drop" id="drop">
+      <div>📦</div>
+      <strong>Tap to choose file</strong>
+      <p>or drag &amp; drop here</p>
+    </label>
+    <input type="file" id="file" accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp" />
+
+    <button id="uploadBtn" disabled>Upload</button>
+    <div id="status"></div>
+
+    <div class="info">
+      ✅ After upload, open <a href="/" target="_blank">the game</a> and click Play.<br>
+      ✅ The file is saved at <code>assets/models/free_fire_new_peak_3d_model.glb</code>.<br>
+      ✅ If your model uses external texture files (e.g. <code>.bin</code>, <code>.png</code>), upload those too — same folder.
+    </div>
+  </div>
+
+<script>
+const fileInput = document.getElementById('file');
+const drop = document.getElementById('drop');
+const btn = document.getElementById('uploadBtn');
+const status = document.getElementById('status');
+let picked = null;
+
+fileInput.addEventListener('change', () => {
+  picked = fileInput.files[0];
+  if (picked) {
+    btn.disabled = false;
+    drop.querySelector('strong').textContent = picked.name;
+    drop.querySelector('p').textContent = (picked.size/1024/1024).toFixed(2) + ' MB';
+  }
+});
+
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    fileInput.dispatchEvent(new Event('change'));
+  }
+});
+
+btn.addEventListener('click', async () => {
+  if (!picked) return;
+  btn.disabled = true;
+  status.className = '';
+  status.textContent = '⏳ Uploading...';
+
+  // Rename the main .glb to the name the game expects
+  let targetName = picked.name;
+  if (picked.name.toLowerCase().endsWith('.glb')) {
+    targetName = 'free_fire_new_peak_3d_model.glb';
+  }
+
+  const form = new FormData();
+  form.append('file', picked, targetName);
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: form });
+    const text = await res.text();
+    if (res.ok) {
+      status.className = 'ok';
+      status.innerHTML = '✅ Uploaded! <a href="/">Open game →</a>';
+    } else {
+      status.className = 'err';
+      status.textContent = '❌ ' + text;
+      btn.disabled = false;
+    }
+  } catch (e) {
+    status.className = 'err';
+    status.textContent = '❌ ' + e.message;
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
