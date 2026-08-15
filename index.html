@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Arena SHOOTER 1.1</title>
+  <link rel="stylesheet" href="src/style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Loading / Start screen -->
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <h1>ARENA <span>SHOOTER</span> 1.1</h1>
+      <p class="sub">3D First-Person Shooter — Explore Test Build</p>
+      <div class="status" id="loadStatus">Loading map...</div>
+      <button id="startBtn" disabled>▶ CLICK TO PLAY</button>
+      <div class="controls">
+        <b>Controls:</b>
+        <span>WASD — Move</span>
+        <span>Mouse — Look</span>
+        <span>Left Click — Shoot</span>
+        <span>R — Reload</span>
+        <span>Shift — Sprint</span>
+        <span>Space — Jump</span>
+        <span>Ctrl — Crouch</span>
+        <span>Esc — Release mouse</span>
+      </div>
+      <div class="mobile-hint">📱 On mobile: use left stick to move, right side to look, button to shoot.</div>
+    </div>
+  </div>
+
+  <!-- Crosshair -->
+  <div id="crosshair">
+    <div class="ch ch-v"></div>
+    <div class="ch ch-h"></div>
+    <div class="ch-dot"></div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="hud-bots">🤖 Bots Left: <span id="botCount">0</span></div>
+      <div class="hud-fps">FPS: <span id="fps">0</span></div>
+    </div>
+    <div class="hud-bottom">
+      <div class="hud-health">
+        <div class="hp-label">HP</div>
+        <div class="hp-bar"><div id="hpFill"></div></div>
+        <div id="hpText">100</div>
+      </div>
+      <div class="hud-ammo">
+        <span id="ammoCur">30</span><span class="ammo-sep">/</span><span id="ammoRes">90</span>
+      </div>
+      <div class="hud-weapon" id="weaponName">AK-47</div>
+    </div>
+    <div id="hitmarker"></div>
+    <div id="damageVignette"></div>
+    <div id="killFeed"></div>
+  </div>
+
+  <!-- Mobile controls -->
+  <div id="touchControls">
+    <div id="stickLeft" class="stick"><div class="stick-knob"></div></div>
+    <div id="lookArea"></div>
+    <button id="fireBtn" class="tbtn">🔥</button>
+    <button id="reloadBtn" class="tbtn sm">R</button>
+    <button id="jumpBtn" class="tbtn sm">⤒</button>
+  </div>
+
+  <canvas id="game"></canvas>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
